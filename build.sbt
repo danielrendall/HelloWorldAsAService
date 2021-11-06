@@ -1,15 +1,11 @@
-lazy val scala211 = "2.11.12"
-lazy val scala212 = "2.12.15"
-lazy val scala213 = "2.13.6"
-lazy val supportedScalaVersions = List(scala213, scala212, scala211)
-
-import Dependencies._
+import sbt.Package.ManifestAttributes
+import sbtassembly.AssemblyKeys.assemblyShadeRules
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-ThisBuild / scalaVersion     := scala213
+ThisBuild / scalaVersion     := "3.1.0"
 ThisBuild / organization     := "uk.co.danielrendall"
-ThisBuild / organizationName := "HelloWorldAsAService"
+ThisBuild / organizationName := "hello-world-as-a-service"
 
 githubOwner := "danielrendall"
 githubRepository := "HelloWorldAsAService"
@@ -19,8 +15,13 @@ releaseCrossBuild := true
 lazy val root = (project in file("."))
   .settings(
     name := "hello-world-as-a-service",
-    crossScalaVersions := supportedScalaVersions,
     libraryDependencies ++= Seq(
-      specs2 % Test
+      "uk.co.danielrendall" %% "services-as-a-service-interfaces" % "0.0.1-SNAPSHOT",
+      "org.nanohttpd" % "nanohttpd" % "2.3.1" % Provided
+    ),
+    packageOptions := Seq(ManifestAttributes(
+      ("Serviceable-Class", "uk.co.danielrendall.saas.helloworld.HelloWorldService"))),
+    assemblyShadeRules := Seq(
+      ShadeRule.zap("scala.**").inAll
     )
   )
